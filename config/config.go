@@ -9,6 +9,7 @@ import (
 type Configuration struct {
 	Environment string
 	Port        int64
+	REDISHOST   string
 }
 
 func initConfig() {

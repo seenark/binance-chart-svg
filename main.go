@@ -22,7 +22,7 @@ func main() {
 	cfg := config.GetConfig()
 	app := fiber.New()
 	redisClient := redis.NewClient(&redis.Options{
-		Addr:     ":6379",
+		Addr:     cfg.REDISHOST,
 		Username: "",
 		Password: "",
 		DB:       0,

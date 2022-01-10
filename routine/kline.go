@@ -6,7 +6,7 @@ import (
 
 	"github.com/seenark/binance-chart-svg/binance"
 	"github.com/seenark/binance-chart-svg/helpers"
-	myChart "github.com/seenark/binance-chart-svg/mychart"
+	mychart "github.com/seenark/binance-chart-svg/myChart"
 	myRedis "github.com/seenark/binance-chart-svg/redis"
 )
 
@@ -45,7 +45,7 @@ func FetchKline(symbol string, binanceClient binance.BinanceClient) (*myRedis.Co
 	for _, k := range kline {
 		closedPrices = append(closedPrices, k.Close)
 	}
-	buff := myChart.GenerateSVG(closedPrices)
+	buff := mychart.GenerateSVG(closedPrices)
 	svg := buff.String()
 	newCoin := myRedis.Coin{
 		Symbol:      symbol,
