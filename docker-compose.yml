@@ -5,5 +5,11 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
+    environment:
+      - PORT=8000
     ports:
-      - 8000:8000
+      - 4000:8000
+  redis:
+    image: redis:6.2.6
+    ports:
+      - 6379:6379
