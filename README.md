@@ -35,7 +35,7 @@
     
     ```  
 
-3. fetch kline hourly will start fetching on server started buy also can start by API
+3. fetch kline hourly will start fetching on server started also can start by API
    request
 
    ```
@@ -58,4 +58,4 @@
 
 #### if data do not exist it will fetch from binance and store in redis first then response to you next  
 
-#### all kline will store in Redis and it will expire in a hour
+#### all kline will store in Redis and it will expire in an hour
