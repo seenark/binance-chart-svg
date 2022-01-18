@@ -108,6 +108,11 @@ func (c *CoinDB) DeleteBySymbols(symbols []string) {
 			fmt.Println(err)
 			continue
 		}
+		err = c.RemoveSymbolFromCoinList(symbol)
+		if err != nil {
+			fmt.Sprintln("cannot remove: from CoinList", symbol)
+			continue
+		}
 	}
 }
 
@@ -125,7 +130,7 @@ func (c *CoinDB) AppendCoinLlist(newSymbol string) error {
 	}
 
 	coinList.Symbols = append(coinList.Symbols, newSymbol)
-	err := c.Redis.Set(c.Ctx, COIN_LIST_KEY, coinList, 30*24*time.Hour).Err()
+	err := c.Redis.Set(c.Ctx, COIN_LIST_KEY, coinList, 0).Err()
 	if err != nil {
 		fmt.Println(err)
 		return err
@@ -152,7 +157,24 @@ func (c *CoinDB) GetCoinList() CoinList {
 		}
 	}
 	return cl
+}
 
+func (c *CoinDB) RemoveSymbolFromCoinList(symbol string) error {
+	coinList := c.GetCoinList()
+	newCoinList := []string{}
+	for _, c := range coinList.Symbols {
+		if c == symbol {
+			continue
+		}
+		newCoinList = append(newCoinList, c)
+	}
+	coinList.Symbols = newCoinList
+	err := c.Redis.Set(c.Ctx, COIN_LIST_KEY, coinList, 0).Err()
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	return nil
 }
 
 func (c *CoinDB) PingRedis() (string, error) {

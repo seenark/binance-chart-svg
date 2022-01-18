@@ -57,7 +57,7 @@ func FetchKline(symbol string, binanceClient binance.BinanceClient) (*myRedis.Co
 
 func getTimeRemaining() time.Duration {
 	now := time.Now()
-	nextHour := time.Date(now.Year(), now.Month(), now.Day(), now.Hour()+1, 0, 0, 0, now.Location())
+	nextHour := time.Date(now.Year(), now.Month(), now.Day(), now.Hour(), now.Minute(), now.Second()+15, 0, now.Location())
 	// nextHour := time.Date(now.Year(), now.Month(), now.Day(), now.Hour(), now.Minute()+1, 0, 0, now.Location())
 	timeToGo := nextHour.Sub(now)
 	fmt.Printf("timeToGo: %v\n", timeToGo)

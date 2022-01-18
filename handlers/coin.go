@@ -22,6 +22,7 @@ func SetCoinHandler(app fiber.Router, coinRepo myRedis.ICoinRepository, b *binan
 	}
 	app.Get("/coins", checkRedisStatus(coinRepo), handler.GetCoins)
 	app.Get("/svg/:symbol", checkRedisStatus(coinRepo), handler.GetSVG)
+	app.Get("/watch-list", checkRedisStatus(coinRepo), handler.GetWatchList)
 
 }
 
@@ -31,32 +32,7 @@ func (ch CoinHander) GetCoins(ctx *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	// coins := ch.repo.GetBySymbols(symbols)
-	// notFoundList := []string{}
-	// symbolMap := map[string]bool{}
-	// for _, s := range coins {
-	// 	symbolMap[s.Symbol] = true
-	// }
-	// // fmt.Printf("symbolMap: %v\n", symbolMap)
-	// for _, s := range symbols {
-	// 	if _, ok := symbolMap[s]; !ok {
-	// 		notFoundList = append(notFoundList, s)
-	// 	}
-	// }
-	// fmt.Printf("notFoundList: %v\n", notFoundList)
-	// // fetch kline for notFoundList
-	// for _, s := range notFoundList {
-
-	// 	newCoin, err := routine.FetchKline(s, *ch.binanceClient)
-	// 	if err != nil {
-	// 		return ctx.SendStatus(fiber.StatusNotFound)
-	// 	}
-	// 	ch.repo.Create(*newCoin)
-	// 	coins = append(coins, *newCoin)
-	// }
-
 	return ctx.Status(fiber.StatusOK).JSON(coins)
-
 }
 
 func (ch CoinHander) GetSVG(ctx *fiber.Ctx) error {
@@ -71,7 +47,10 @@ func (ch CoinHander) GetSVG(ctx *fiber.Ctx) error {
 	}
 	coin := coins[0]
 	return ctx.Type(".svg").Status(fiber.StatusOK).Send([]byte(coin.Svg))
-	// return ctx.Status(fiber.StatusOK).JSON(coins[0])
+}
+
+func (ch CoinHander) GetWatchList(ctx *fiber.Ctx) error {
+	return ctx.Status(fiber.StatusOK).JSON(ch.repo.GetCoinList())
 }
 
 func getCoinAndFetchBySymbols(symbols []string, repo myRedis.ICoinRepository, bc binance.BinanceClient) ([]myRedis.Coin, error) {
@@ -94,6 +73,7 @@ func getCoinAndFetchBySymbols(symbols []string, repo myRedis.ICoinRepository, bc
 		newCoin, err := routine.FetchKline(s, bc)
 		if err != nil {
 			fmt.Printf("err: %v\n", err)
+			repo.DeleteBySymbols([]string{s})
 			continue
 			// return nil, err
 		}
